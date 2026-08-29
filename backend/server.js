@@ -85,6 +85,29 @@ app.get("/api/posts/:id", (req, res)=>{
     return res.status(200).json(post);
 });
 
+// 게시글 번호로 게시글 하나를 삭제하는 API
+app.delete("/api/posts/:id", (req, res)=>{
+    const postId = Number(req.params.id);
+
+    const postIndex = posts.findIndex((post)=> post.id === postId);
+
+    // 해당 번호의 게시글이 없을 때
+    if(postIndex === -1) {
+        return res.status(404).json({
+            msg: "게시글을 찾을 수 없습니다.",
+        });
+    }
+
+    // 배열에서 해당 게시글을 삭제하고, 삭제된 데이터를 받습니다.
+    const deletedPost = posts.splice(postIndex, 1)[0];
+
+    return res.status(200).json({
+        msg: "게시글이 삭제되었습니다.",
+        deletedPost,
+    });
+});
+
+
 
 app.listen(PORT, ()=>{
     console.log(`Server is running at http://localhost:${PORT}`);
