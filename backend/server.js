@@ -66,6 +66,26 @@ app.post("/api/posts", (req, res)=>{
     return res.status(201).json(newPost);
 });
 
+// 게시글 번호로 게시글 하나를 조회하는 API
+app.get("/api/posts/:id", (req, res)=>{
+    const postId = Number(req.params.id);
+
+    const post = posts.find((post)=> post.id === postId);
+
+    // 해당 번호의 게시글이 없을 때
+    if(!post) {
+        return res.status(404).json({
+            msg: "게시글을 찾을 수 없습니다.",
+        });
+    }
+
+    // 상세 페이지를 조회할 때마다 조회수를 1 증가합니다.
+    post.views += 1;
+
+    return res.status(200).json(post);
+});
+
+
 app.listen(PORT, ()=>{
     console.log(`Server is running at http://localhost:${PORT}`);
 });
