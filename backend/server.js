@@ -38,6 +38,34 @@ app.get("/api/posts", (req, res)=>{
     res.status(200).json(posts);
 });
 
+// 새 게시글을 배열에 추가하는 API
+let nextPostId = 3;
+
+app.post("/api/posts", (req, res)=>{
+    const { title, content} = req.body;
+
+    // 제목과 내용이 없으면 작성할 수 없습니다.
+    if(!title || !content) {
+        return res.status(400).json({
+            msg: "제목과 내용을 모두 입력해주세요",
+        });
+    }
+
+    const newPost = {
+        id: nextPostId,
+        title,
+        content,
+        author: "정채은",
+        views: 0,
+        createdAt: new Date().toISOString().slice(0, 10),
+    };
+
+    posts.push(newPost);
+    nextPostId +=1;
+
+    return res.status(201).json(newPost);
+});
+
 app.listen(PORT, ()=>{
     console.log(`Server is running at http://localhost:${PORT}`);
 });
