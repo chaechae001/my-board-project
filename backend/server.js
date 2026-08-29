@@ -1,4 +1,7 @@
 const express = require('express');
+const mongoose = require("mongoose");
+const Post = require("./models/Post");
+
 const app = express();
 
 const PORT = 4000;
@@ -109,6 +112,23 @@ app.delete("/api/posts/:id", (req, res)=>{
 
 
 
-app.listen(PORT, ()=>{
-    console.log(`Server is running at http://localhost:${PORT}`);
-});
+// app.listen(PORT, ()=>{
+//     console.log(`Server is running at http://localhost:${PORT}`);
+// });
+
+async function startServer(){
+    try{
+        await mongoose.connect("mongodb://127.0.0.1:27017/my_board_db");
+
+        console.log("MongoDB 연결 성공");
+
+        app.listen(4000, ()=>{
+            console.log("Server is running on port 4000");
+        });
+    } catch (error) {
+        console.error("MongoDB 연결 실패:", error.message);
+        process.exit(1);
+    }
+}
+
+startServer();
