@@ -69,59 +69,90 @@ app.post("/api/posts", requireAuth, async (req, res)=>{
 });
 
 // MongoDB에서 게시글 상세 조회 및 조회수 증가
-app.get("/api/posts/:id", async (req, res)=>{
+// 본인이 작성한 게시글만 수정, 삭제할 수 있게 만들기
+app.get("/api/posts/:id", requireAuth, async (req, res)=>{
     try {
         const {id} = req.params;
+        const {title, content} = req.body;
 
-        // MongoDB ObjectId 형식이 아닌 경우
+        // URL의 게시글 id가 MongoDB ObjectId 형식이 아닌 경우
         if(!mongoose.Types.ObjectId.isValid(id)){
             return res.status(400).json({
                 msg: "올바르지 않은 게시글 ID입니다."
             });
         }
 
-        const post = await Post.findByIdAndUpdate(
-            id,
-            { $inc: {views: 1} },
-            { new: true },
-        );
+        // 수정하려는 게시글을 MongoDB에서 찾음
+        const post = await Post.findById(id);
 
-        // 해당 번호의 게시글이 없을 때
-        if(!post) {
+        if (!post) {
             return res.status(404).json({
                 msg: "게시글을 찾을 수 없습니다.",
             });
         }
+
+        // 게시글 작성자와 현재 로그인 사용자가 같은 사람인지 확인
+        if (
+            !post.authorId ||
+            post.authorId.toString() !== String(req.user.userId)
+        ) {
+            return res.status(403).json({
+                msg: "작성자만 게시글을 수정할 수 있습니다.",
+            })
+        }
+
+        // 작성자 확인을 통과한 경우에만 내용을 수정
+        post.title = title;
+        post.content = content;
+
+        // 수정된 내용을 MongoDB에 저장
+        await post.save();
+
         return res.status(200).json(post);
     } catch (error) {
         return res.status(500).json({
-            msg: "게시글을 불러오지 못했습니다.",
+            msg: "게시글을 수정하지 못했습니다.",
         });
     }
 });
 
 // MongoDB에서 게시글 하나를 삭제하는 API
-app.delete("/api/posts/:id", async (req, res)=>{
+// 로그인한 작성자만 자신의 게시글을 삭제하는 API
+app.delete("/api/posts/:id", requireAuth, async (req, res)=>{
     try {
         const {id} = req.params;
 
+        // URL의 게시글 ID가 MongoDB 형식인지 확인
         if(!mongoose.Types.ObjectId.isValid(id)){
             return res.status(400).json({
                 msg: "올바르지 않은 게시글 ID입니다.",
             });
         }
 
-        const deletedPost = await Post.findByIdAndDelete(id);
+        // 삭제하려는 게시글을 MongoDB에서 찾음
+        const post = await Post.findById(id);
 
-        if(!deletedPost) {
+        if (!post) {
             return res.status(404).json({
                 msg: "게시글을 찾을 수 없습니다.",
             });
         }
 
+        // 게시글 작성자와 현재 로그인 사용자가 같은 사람인 지 확인
+        if (
+            !post.authorId ||
+            post.authorId.toString() !== String(req.user.userId)
+        ) {
+            return res.status(403).json({
+                msg: "작성자만 게시글을 삭제할 수 있습니다.",
+            });
+        }
+
+        // 작성자 확인을 통과한 경우에만 MongoDB에서 삭제
+        await post.deleteOne();
+
         return res.status(200).json({
             msg: "게시글이 삭제되었습니다.",
-            deletedPost,
         });
     } catch {
         return res.status(500).json({
