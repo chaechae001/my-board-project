@@ -113,33 +113,77 @@ app.get("/api/posts/:id", async (req, res)=>{
     }
 });
 
-// 게시글 번호로 게시글 하나를 삭제하는 API
-app.delete("/api/posts/:id", (req, res)=>{
-    const postId = Number(req.params.id);
+// MongoDB에서 게시글 하나를 삭제하는 API
+app.delete("/api/posts/:id", async (req, res)=>{
+    try {
+        const {id} = req.params;
 
-    const postIndex = posts.findIndex((post)=> post.id === postId);
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            return res.status(400).json({
+                msg: "올바르지 않은 게시글 ID입니다.",
+            });
+        }
 
-    // 해당 번호의 게시글이 없을 때
-    if(postIndex === -1) {
-        return res.status(404).json({
-            msg: "게시글을 찾을 수 없습니다.",
+        const deletedPost = await Post.findByIdAndDelete(id);
+
+        if(!deletedPost) {
+            return res.status(404).json({
+                msg: "게시글을 찾을 수 없습니다.",
+            });
+        }
+
+        return res.status(200).json({
+            msg: "게시글이 삭제되었습니다.",
+            deletedPost,
+        });
+    } catch {
+        return res.status(500).json({
+            msg: "게시글을 삭제하지 못했습니다.",
         });
     }
-
-    // 배열에서 해당 게시글을 삭제하고, 삭제된 데이터를 받습니다.
-    const deletedPost = posts.splice(postIndex, 1)[0];
-
-    return res.status(200).json({
-        msg: "게시글이 삭제되었습니다.",
-        deletedPost,
-    });
 });
 
+// MongoDB에서 게시글 제목과 내용을 수정하는 API
+app.patch("/api/posts/:id", async (req, res) =>{
+    try {
+        const { id } = req.params;
+        const {title, content} = req.body;
 
+        if (!mongoose.Types.ObjectId.isValid(id)){
+            return res.status(400).json({
+                msg: "올바르지 않은 게시글 ID입니다.",
+            });
+        }
+        if (!title?.trim() || !content?.trim()) {
+            return res.status(400).json({
+                msg: "제목과 내용을 모두 입력해주세요.",
+            })
+        }
 
-// app.listen(PORT, ()=>{
-//     console.log(`Server is running at http://localhost:${PORT}`);
-// });
+        const updatedPost = await Post.findByIdAndUpdate(
+            id,
+            {
+                title,
+                content,
+            },
+            {
+                new: true, // 수정 전이 아닌 수정 후 데이터를 응답
+                runValidators: true,
+            },
+        );
+
+        if (!updatedPost){
+            return res.status(404).json({
+                msg: "게시글을 찾을 수 없습니다.",
+            });
+        }
+        return res.status(200).json(updatedPost);
+    } catch (error) {
+        return res.status(500).json({
+            msg: "게시글을 수정하지 못했습니다.",
+        });
+    }
+});
 
 async function startServer(){
     try{
