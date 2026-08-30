@@ -5,10 +5,12 @@ const jwt = require("jsonwebtoken");
 
 const Post = require("./models/Post");
 const User = require("./models/User");
+const {JWT_SECRET } =  require("./config/auth");
+const requireAuth = require("./middlewares/requireAuth");
 
 // JWT 토큰을 만들 때 사용할 임시 비밀키
 // 나중에 dotenv로 .env 파일로 옮길 예정
-const JWT_SECRET = "my-board-project-secret-key";
+// const JWT_SECRET = "my-board-project-secret-key";
 
 const app = express();
 
@@ -291,7 +293,13 @@ app.post("/api/auth/login", async (req, res)=>{
     }
 });
 
-
+// 로그인한 사용자만 자신의 토큰 정보를 확인할 수 있는 API
+app.get("/api/auth/me", requireAuth, (req, res) =>{
+    return res.status(200).json({
+        msg: "로그인한 사용자입니다.",
+        user : req.user,
+    });
+});
 
 
 
