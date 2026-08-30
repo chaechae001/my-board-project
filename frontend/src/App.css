@@ -1,13 +1,16 @@
+/* 페이지 전체의 최대 너비와 위아래 여백을 정합니다. */
 .app {
   width: min(100% - 40px, 1000px);
   margin: 0 auto;
   padding: 72px 0;
 }
 
+/* 페이지 제목 영역입니다. */
 .page-header {
   margin-bottom: 32px;
 }
 
+/* 작은 영문 안내 문구 스타일입니다. */
 .eyebrow {
   margin: 0 0 10px;
   color: #5269ff;
@@ -16,17 +19,20 @@
   letter-spacing: 0.12em;
 }
 
+/* My Board 제목 스타일입니다. */
 .page-header h1 {
   margin: 0;
   font-size: 40px;
   letter-spacing: -0.04em;
 }
 
+/* 제목 아래 설명 문구 스타일입니다. */
 .subtitle {
   margin: 12px 0 0;
   color: #6b7280;
 }
 
+/* 게시글 표를 감싸는 흰색 카드입니다. */
 .board {
   overflow: hidden;
   border: 1px solid #e5e7eb;
@@ -35,6 +41,7 @@
   box-shadow: 0 10px 30px rgba(31, 41, 55, 0.06);
 }
 
+/* 카드 상단의 제목·글쓰기 버튼 영역입니다. */
 .board-heading {
   display: flex;
   align-items: center;
@@ -54,6 +61,7 @@
   font-size: 14px;
 }
 
+/* 다음 단계에서 글쓰기 페이지로 연결할 버튼입니다. */
 .write-button {
   border: 0;
   border-radius: 8px;
@@ -64,16 +72,19 @@
   cursor: pointer;
 }
 
+/* 모바일에서 표가 화면보다 넓을 때 가로 스크롤을 허용합니다. */
 .table-wrapper {
   overflow-x: auto;
 }
 
+/* 게시글 목록 표의 기본 모양입니다. */
 table {
   width: 100%;
   border-collapse: collapse;
   min-width: 680px;
 }
 
+/* 표의 제목 칸과 내용 칸의 공통 스타일입니다. */
 th,
 td {
   padding: 16px;
@@ -82,29 +93,35 @@ td {
   font-size: 14px;
 }
 
+/* 표의 제목 행 스타일입니다. */
 th {
   background: #fafbff;
   color: #6b7280;
   font-weight: 600;
 }
 
+/* 두 번째 열인 제목만 왼쪽 정렬합니다. */
 td:nth-child(2) {
   text-align: left;
 }
 
+/* 게시글 제목을 조금 더 강조합니다. */
 .post-title {
   color: #1f2937;
   font-weight: 600;
 }
 
+/* 마우스를 올린 게시글 줄을 강조합니다. */
 tbody tr:hover {
   background: #fafbff;
 }
 
+/* 마지막 줄 아래의 선은 제거합니다. */
 tbody tr:last-child td {
   border-bottom: 0;
 }
 
+/* 로딩·오류·빈 목록 메시지의 공통 스타일입니다. */
 .status-message {
   margin: 0;
   padding: 48px 24px;
@@ -112,10 +129,12 @@ tbody tr:last-child td {
   text-align: center;
 }
 
+/* 오류 메시지만 빨간색으로 표시합니다. */
 .error-message {
   color: #d14343;
 }
 
+/* 휴대폰 화면에서 여백과 제목 크기를 줄입니다. */
 @media (max-width: 600px) {
   .app {
     width: min(100% - 24px, 1000px);
@@ -129,4 +148,35 @@ tbody tr:last-child td {
   .board-heading {
     padding: 20px;
   }
+}
+
+/* 제목 링크의 기본 밑줄을 제거하고 제목처럼 보이게 합니다. */
+.post-title-link {
+  color: #1f2937;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* 제목에 마우스를 올리면 클릭할 수 있다는 표시를 합니다. */
+.post-title-link:hover {
+  color: #5269ff;
+  text-decoration: underline;
+}
+
+/* 상세 화면에서 목록으로 돌아가는 링크입니다. */
+.back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #5269ff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* 상세 화면의 내용을 담는 카드입니다. */
+.detail-card {
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(31, 41, 55, 0.06);
 }

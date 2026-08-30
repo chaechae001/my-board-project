@@ -1,3 +1,4 @@
+/* 브라우저 전체에서 공통으로 사용할 글꼴과 기본 색상입니다. */
 :root {
   font-family: Pretendard, "Noto Sans KR", Arial, sans-serif;
   color: #1f2937;
@@ -6,16 +7,19 @@
   text-rendering: optimizeLegibility;
 }
 
+/* 모든 요소의 너비와 높이에 padding·border까지 포함합니다. */
 * {
   box-sizing: border-box;
 }
 
+/* 브라우저가 기본으로 넣는 body 여백을 제거합니다. */
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
 }
 
+/* 버튼이 주변 글자와 같은 글꼴을 사용하게 합니다. */
 button {
   font: inherit;
 }
