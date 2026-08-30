@@ -1,32 +1,15 @@
 const express = require('express');
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+
 const Post = require("./models/Post");
+const User = require("./models/User");
 
 const app = express();
 
 const PORT = 4000;
 
 app.use(express.json());
-
-// 아직 DB가 없으므로, 서버 메모리에 임시 게시글을 둔다
-// const posts = [
-//     {
-//         id: 1,
-//         title: "첫 번째 게시글",
-//         content: "Express 서버에서 보낸 게시글입니다.",
-//         author: "정채은",
-//         views: 0,
-//         createdAt: "2026-08-29",
-//     },
-//     {
-//         id: 2,
-//         title: "두 번째 게시글",
-//         content: "다음 단계에서 이 배열에 글을 추가합니다.",
-//         author: "관리자",
-//         views: 3,
-//         createdAt: "2026-08-29",
-//     },
-// ];
 
 // 서버가 정상 실행 중인지 확인하는 API
 app.get("/api/health", (req, res)=> {
@@ -36,10 +19,6 @@ app.get("/api/health", (req, res)=> {
     });
 });
 
-// 게시글 목록을 반환하는 API
-// app.get("/api/posts", (req, res)=>{
-//     res.status(200).json(posts);
-// });
 
 // 게시글 목록을 MongoDB에서 조회하는 API
 app.get('/api/posts', async(req, res)=>{
@@ -52,9 +31,6 @@ app.get('/api/posts', async(req, res)=>{
         });
     }
 });
-
-// 새 게시글을 배열에 추가하는 API
-// let nextPostId = 3;
 
 // 새 게시글을 MongoDB에 저장하는 API
 app.post("/api/posts", async (req, res)=>{
@@ -146,8 +122,8 @@ app.delete("/api/posts/:id", async (req, res)=>{
 // MongoDB에서 게시글 제목과 내용을 수정하는 API
 app.patch("/api/posts/:id", async (req, res) =>{
     try {
-        const { id } = req.params;
-        const {title, content} = req.body;
+        const { id } = req.params;  // URL의 :id로 "어떤 게시글을 수정할 지" 찾음
+        const {title, content} = req.body;  // Body의 title.content를 "무엇으로 수정할 지" 받음
 
         if (!mongoose.Types.ObjectId.isValid(id)){
             return res.status(400).json({
@@ -157,7 +133,7 @@ app.patch("/api/posts/:id", async (req, res) =>{
         if (!title?.trim() || !content?.trim()) {
             return res.status(400).json({
                 msg: "제목과 내용을 모두 입력해주세요.",
-            })
+            });
         }
 
         const updatedPost = await Post.findByIdAndUpdate(
@@ -199,5 +175,57 @@ async function startServer(){
         process.exit(1);
     }
 }
+
+// 회원가입 API
+app.post("/api/auth/register", async (req, res)=>{
+    try {
+        // Thunder가 Body로 보낸 아이디와 비밀번호를 받음
+        const { userId, password} = req.body;
+        // 아이디 또는 비밀번호가 비어있는 지 먼저 확인
+        if (!userId?.trim() || !password.trim()) {
+            return res.status(400).json({
+                msg: "아이디와 비밀번호를 모두 입력해주세요.",
+            });
+        }
+
+        // 비밀번호 길이를 확인
+        if(password.length < 8){
+            return res.status(400).json({
+                msg: "비밀번호는 8자 이상 입력해주세요.",
+            });
+        }
+
+        // 같은 아이디가 있는 지 MongoDB에서 찾기
+        const existingUser = await User.findOne({userId});
+        if (existingUser) {
+            return res.status(400).json({
+                msg: "이미 사용 중인 아이디입니다.",
+            });
+        }
+
+        // 비밀번호를 암호화
+        // 숫자 10은 암호화의 강도를 뜻함
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // 암호화한 비밀번호를 MongoDB에 저장
+        const newUser = await User.create({
+            userId,
+            password: hashedPassword,
+        });
+
+        // 비밀번호는 응답으로 보내지 않음
+        return res.status(201).json({
+            msg: "회원가입이 완료되었습니다.",
+            user: {
+                id: newUser._id,
+                userId: newUser.userId,
+                createdAg: newUser.createdAt,
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({
+            msg: "회원가입 처리 중 오류가 발생했습니다.",
+        });
+    }
+});
 
 startServer();
