@@ -1,9 +1,14 @@
 const express = require('express');
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const Post = require("./models/Post");
 const User = require("./models/User");
+
+// JWT 토큰을 만들 때 사용할 임시 비밀키
+// 나중에 dotenv로 .env 파일로 옮길 예정
+const JWT_SECRET = "my-board-project-secret-key";
 
 const app = express();
 
@@ -227,5 +232,67 @@ app.post("/api/auth/register", async (req, res)=>{
         });
     }
 });
+
+// 로그인 API
+app.post("/api/auth/login", async (req, res)=>{
+    try {
+        // Thunder가 보낸 아이디와 비밀번호 받기
+        const {userId, password} = req.body;
+        // 아이디 또는 비밀번호가 비어있는 지 확인
+        if(!userId?.trim() || !password?.trim()) {
+            return res.status(400).json({
+                msg: "아이디와 비밀번호를 모두 입력해주세요.",
+            });
+        }
+
+        // 입력한 아이디와 일치하는 사용자를 MongoDB에서 찾기
+        const user = await User.findOne({userId});
+
+        // 가입하지 않은 아이디이거나 비밀번호가 틀린 경우
+        if (!user) {
+            return res.status(400).json({
+                msg: "아이디 또는 비밀번호가 올바르지 않습니다.",
+            })
+        }
+
+        // 사용자가 입력한 비밀번호와 DB의 암호화된 비밀번호를 비교
+        const isPasswordMatched = await bcrypt.compare(password, user.password);
+
+        if(!isPasswordMatched){
+            return res.status(401).json({
+                msg: "아이디 또는 비밀번호가 올바르지 않습니다.",
+            });
+        }
+
+        // 로그인 성공 정보를 담은 토큰 만들기
+        const token = jwt.sign(
+            {
+                userId: user._id,
+                loginId: user.userId,
+            },
+            JWT_SECRET,
+            {
+                expiresIn: "1h", // 토큰은 발급 후 1시간 동안만 유효
+            },
+        );
+
+        return res.status(200).json({
+            msg: "로그인에 성공했습니다.",
+            token,
+            user: {
+                id: user._id,
+                userId: user.userId,
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({
+            msg: "로그인 처리 중 오류가 발생했습니다.",
+        });
+    }
+});
+
+
+
+
 
 startServer();
