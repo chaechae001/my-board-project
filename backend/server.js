@@ -40,7 +40,9 @@ app.get('/api/posts', async(req, res)=>{
 });
 
 // 새 게시글을 MongoDB에 저장하는 API
-app.post("/api/posts", async (req, res)=>{
+// requireAuth가 먼저 토큰 확인
+// 토큰이 없거나 만료되면 게시글 작성 코드는 실행 x
+app.post("/api/posts", requireAuth, async (req, res)=>{
     try {
         const { title, content} = req.body;
 
@@ -50,10 +52,12 @@ app.post("/api/posts", async (req, res)=>{
                 message: "제목과 내용을 모두 입력해주세요.",
             });
         }
-
+        // 토큰에서 확인한 로그인 사용자 정보를 게시글에 함께 저장
         const newPost = await Post.create({
             title,
             content,
+            author: req.user.loginId,
+            authorId: req.user.userId,
         });
 
         return res.status(201).json(newPost);

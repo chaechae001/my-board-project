@@ -15,7 +15,15 @@ const postSchema = new mongoose.Schema(
         },
         author: {
             type: String,
-            default: "정채은",
+            required: true,
+            trim: true,
+        },
+        // 이글을 실제로 작성한 사용자의 MongoDB 고유 ID
+        // 나중에 수정, 삭제 권한 확인 할 때 사용
+        authorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
         },
         views: {
             type: Number,
