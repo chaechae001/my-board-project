@@ -81,23 +81,36 @@ app.post("/api/posts", async (req, res)=>{
     }
 });
 
-// 게시글 번호로 게시글 하나를 조회하는 API
-app.get("/api/posts/:id", (req, res)=>{
-    const postId = Number(req.params.id);
+// MongoDB에서 게시글 상세 조회 및 조회수 증가
+app.get("/api/posts/:id", async (req, res)=>{
+    try {
+        const {id} = req.params;
 
-    const post = posts.find((post)=> post.id === postId);
+        // MongoDB ObjectId 형식이 아닌 경우
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            return res.status(400).json({
+                msg: "올바르지 않은 게시글 ID입니다."
+            });
+        }
 
-    // 해당 번호의 게시글이 없을 때
-    if(!post) {
-        return res.status(404).json({
-            msg: "게시글을 찾을 수 없습니다.",
+        const post = await Post.findByIdAndUpdate(
+            id,
+            { $inc: {views: 1} },
+            { new: true },
+        );
+
+        // 해당 번호의 게시글이 없을 때
+        if(!post) {
+            return res.status(404).json({
+                msg: "게시글을 찾을 수 없습니다.",
+            });
+        }
+        return res.status(200).json(post);
+    } catch (error) {
+        return res.status(500).json({
+            msg: "게시글을 불러오지 못했습니다.",
         });
     }
-
-    // 상세 페이지를 조회할 때마다 조회수를 1 증가합니다.
-    post.views += 1;
-
-    return res.status(200).json(post);
 });
 
 // 게시글 번호로 게시글 하나를 삭제하는 API
