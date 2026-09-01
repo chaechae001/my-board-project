@@ -21,21 +21,20 @@ React, Express, MongoDB 기반의 JWT 인증 커뮤니티 게시판입니다.
 로그인 성공 시 JWT 토큰을 발급하고 브라우저에 저장합니다.  
 계정이 없는 사용자는 회원가입 화면으로 이동할 수 있습니다.
 
-![로그인 화면](docs/screenshots/login.png)
+<img src="./docs/screenshots/login.png" alt="로그인 화면" width="540" />
 
 ### 2. 게시글 목록
 
 인증된 사용자의 게시글 목록을 조회합니다.  
 현재 로그인한 `user01`에게는 본인이 작성한 게시글에만 수정 버튼이 표시됩니다.
 
-![게시글 목록](docs/screenshots/post-list.png)
-
+<img src="./docs/screenshots/post-list.png" alt="게시글 목록" width="540" />
 ### 3. 게시글 상세 및 작성자 권한 제어
 
 `user01`이 다른 사용자(`user02`)의 게시글을 조회한 화면입니다.  
 작성자가 아니므로 수정·삭제 버튼이 표시되지 않습니다.
 
-![게시글 상세 및 권한 제어](docs/screenshots/post-detail-permission.png)
+<img src="./docs/screenshots/post-detail-permission.png" alt="게시글 상세 및 권한 제어" width="540" />
 
 ## 기술 스택
 
