@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require('express');
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -6,13 +7,14 @@ const cors = require("cors");
 
 const Post = require("./models/Post");
 const User = require("./models/User");
-const {JWT_SECRET } =  require("./config/auth");
 const requireAuth = require("./middlewares/requireAuth");
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET 환경 변수가 설정되지 않았습니다.");
+}
 
 // JWT 토큰을 만들 때 사용할 임시 비밀키
-// 나중에 dotenv로 .env 파일로 옮길 예정
-// const JWT_SECRET = "my-board-project-secret-key";
-
 const app = express();
 
 const PORT = 4000;
