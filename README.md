@@ -30,7 +30,6 @@ React, Express, MongoDB 기반의 JWT 인증 커뮤니티 게시판입니다.
 
 <img src="./docs/screenshots/post-list.png" alt="게시글 목록" width="540" />
 
-
 ### 3. 게시글 상세 및 작성자 권한 제어
 
 `user01`이 다른 사용자(`user02`)의 게시글을 조회한 화면입니다.  
@@ -45,7 +44,7 @@ React, Express, MongoDB 기반의 JWT 인증 커뮤니티 게시판입니다.
 | Frontend | React, Vite, React Router, CSS |
 | Backend | Node.js, Express |
 | Database | MongoDB, Mongoose |
-| Authentication | JSON Web Token, bcrypt |
+| Authentication | JSON Web Token, bcrypt, dotenv |
 | API Test | WebStorm HTTP Client |
 | Version Control | Git, GitHub |
 
@@ -59,6 +58,7 @@ my_board_project
 │   ├── models
 │   │   ├── Post.js
 │   │   └── User.js
+│   ├── .env.example
 │   ├── board-api.http
 │   ├── package.json
 │   └── server.js
@@ -88,16 +88,19 @@ mongodb://127.0.0.1:27017/my_board_db
 
 ### 2. 백엔드 실행
 
+`backend/.env.example`을 참고해 `backend/.env` 파일을 만듭니다.
+
+```env
+JWT_SECRET=your-local-secret-key
+```
+
+그다음 백엔드를 실행합니다.
+
 ```bash
 cd backend
 npm install
 node server.js
 ```
-
-`backend/.env.example`을 참고해 `backend/.env` 파일을 만들고 JWT 비밀키를 설정합니다.
-
-```env
-JWT_SECRET=your-local-secret-key
 
 백엔드 서버는 `http://localhost:4000`에서 실행됩니다.
 
@@ -136,9 +139,9 @@ npm run dev
 Authorization: Bearer {token}
 ```
 
-4. 서버의 `requireAuth` 미들웨어가 토큰을 검증합니다.
-5. 수정·삭제 시 게시글의 `authorId`와 로그인 사용자의 ID를 비교합니다.
-6. 작성자가 아닐 경우 `403 Forbidden` 응답을 반환합니다.
+4. `requireAuth` 미들웨어가 토큰을 검증하고 사용자 정보를 `req.user`에 저장합니다.
+5. 게시글 수정·삭제 시 게시글의 `authorId`와 `req.user.userId`를 비교합니다.
+6. 작성자가 아닐 경우 서버는 `403 Forbidden`을 반환합니다.
 
 ## HTTP 상태 코드
 
@@ -156,4 +159,4 @@ Authorization: Bearer {token}
 - 이미지 업로드 및 미리보기
 - 게시글 검색 및 페이지네이션
 - 수정 화면 진입 시 조회수가 증가하지 않도록 API 분리
-- 배포 환경 구성
+- 운영 환경별 환경 변수 설정 및 배포 구성
