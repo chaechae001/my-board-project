@@ -1,19 +1,32 @@
-// URL과 화면을 연결하는 기능
-import {Route, Routes} from "react-router";
-
-import "./App.css";
+import { Navigate, Route, Routes } from "react-router";
+import Header from "./components/Header";
+import LoginPage from "./pages/LoginPage";
 import PostListPage from "./pages/PostListPage";
 import PostDetailPage from "./pages/PostDetailPage";
+import PostWritePage from "./pages/PostWritePage";
+import PostEditPage from "./pages/PostEditPage";
+import RegisterPage from "./pages/RegisterPage";
+import "./App.css";
 
 function App() {
-  return (
-      <Routes>
-        {/*기본 주소에서는 게시글 목록 화면을 보여줌*/}
-        <Route path="/" element={<PostListPage />} />
-        {/*/posts/게시글_ID 주소에서는 상세 화면을 보여줌*/}
-        <Route path="/posts/:id" element={<PostDetailPage />} />
-      </Routes>
-  );
+    return (
+        <div className="app-shell">
+            <Header />
+
+            <main className="page-content">
+                <Routes>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/" element={<PostListPage />} />
+                    <Route path="/posts/:id" element={<PostDetailPage />} />
+                    <Route path="/posts/:id/edit" element={<PostEditPage />} />
+                    <Route path="/write" element={<PostWritePage />} />
+                    {/* 존재하지 않는 주소는 목록 화면으로 이동 */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </main>
+        </div>
+    );
 }
 
 export default App;

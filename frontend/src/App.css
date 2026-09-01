@@ -1,182 +1,351 @@
-/* 페이지 전체의 최대 너비와 위아래 여백을 정합니다. */
-.app {
-  width: min(100% - 40px, 1000px);
-  margin: 0 auto;
-  padding: 72px 0;
+* {
+  box-sizing: border-box;
 }
 
-/* 페이지 제목 영역입니다. */
-.page-header {
-  margin-bottom: 32px;
-}
-
-/* 작은 영문 안내 문구 스타일입니다. */
-.eyebrow {
-  margin: 0 0 10px;
-  color: #5269ff;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-}
-
-/* My Board 제목 스타일입니다. */
-.page-header h1 {
+body {
   margin: 0;
-  font-size: 40px;
-  letter-spacing: -0.04em;
+  background: #f5f7fb;
+  color: #172033;
+  font-family: Arial, sans-serif;
 }
 
-/* 제목 아래 설명 문구 스타일입니다. */
-.subtitle {
-  margin: 12px 0 0;
-  color: #6b7280;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* 게시글 표를 감싸는 흰색 카드입니다. */
-.board {
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(31, 41, 55, 0.06);
+button,
+input,
+textarea {
+  font: inherit;
 }
 
-/* 카드 상단의 제목·글쓰기 버튼 영역입니다. */
-.board-heading {
+.app-shell {
+  min-height: 100vh;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 22px 16px;
+}
+
+.site-logo,
+.eyebrow {
+  color: #4d65ff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.site-nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  gap: 12px;
 }
 
-.board-heading h2 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.board-heading p {
-  margin: 6px 0 0;
-  color: #6b7280;
+.login-user {
+  color: #53617a;
   font-size: 14px;
 }
 
-/* 다음 단계에서 글쓰기 페이지로 연결할 버튼입니다. */
-.write-button {
+.nav-write-link,
+.nav-login-link,
+.primary-link-button,
+.submit-button {
   border: 0;
   border-radius: 8px;
-  padding: 10px 16px;
-  background: #5269ff;
-  color: #ffffff;
-  font-weight: 700;
+  background: #4d65ff;
+  color: white;
   cursor: pointer;
+  font-weight: 700;
+  padding: 11px 16px;
 }
 
-/* 모바일에서 표가 화면보다 넓을 때 가로 스크롤을 허용합니다. */
-.table-wrapper {
+.logout-button {
+  border: 0;
+  /*background: transparent;*/
+  color: #5f6d85;
+  cursor: pointer;
+  border-radius: 8px;
+  background: lightgray;
+  /*color: white;*/
+  font-weight: 500;
+  padding: 10px 10px;
+}
+
+.page-content {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+.board-intro {
+  margin: 10px 0 32px;
+}
+
+.board-intro h1,
+.auth-card h1,
+.write-card h1,
+.detail-card h1 {
+  margin: 18px 0 12px;
+  font-size: 40px;
+}
+
+.board-intro p:not(.eyebrow),
+.auth-description {
+  color: #60708a;
+}
+
+.board-card,
+.auth-card,
+.write-card,
+.detail-card {
+  border: 1px solid #e1e6f0;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 8px 24px rgba(28, 48, 89, 0.06);
+}
+
+.board-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 26px 24px;
+  border-bottom: 1px solid #e7ebf2;
+}
+
+.board-card-header h2 {
+  margin: 0 0 6px;
+}
+
+.board-card-header p {
+  margin: 0;
+  color: #6b7890;
+}
+
+.table-scroll {
   overflow-x: auto;
 }
 
-/* 게시글 목록 표의 기본 모양입니다. */
-table {
+.post-table {
   width: 100%;
-  border-collapse: collapse;
   min-width: 680px;
+  border-collapse: collapse;
 }
 
-/* 표의 제목 칸과 내용 칸의 공통 스타일입니다. */
-th,
-td {
-  padding: 16px;
-  border-bottom: 1px solid #eef0f4;
+.post-table th,
+.post-table td {
+  padding: 17px 20px;
+  border-bottom: 1px solid #e7ebf2;
   text-align: center;
+}
+
+.post-table th {
+  background: #fafbfe;
   font-size: 14px;
 }
 
-/* 표의 제목 행 스타일입니다. */
-th {
-  background: #fafbff;
-  color: #6b7280;
-  font-weight: 600;
+.post-title-cell {
+  max-width: 360px;
+  text-align: left !important;
 }
 
-/* 두 번째 열인 제목만 왼쪽 정렬합니다. */
-td:nth-child(2) {
-  text-align: left;
-}
-
-/* 게시글 제목을 조금 더 강조합니다. */
-.post-title {
-  color: #1f2937;
-  font-weight: 600;
-}
-
-/* 마우스를 올린 게시글 줄을 강조합니다. */
-tbody tr:hover {
-  background: #fafbff;
-}
-
-/* 마지막 줄 아래의 선은 제거합니다. */
-tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-/* 로딩·오류·빈 목록 메시지의 공통 스타일입니다. */
-.status-message {
-  margin: 0;
-  padding: 48px 24px;
-  color: #6b7280;
-  text-align: center;
-}
-
-/* 오류 메시지만 빨간색으로 표시합니다. */
-.error-message {
-  color: #d14343;
-}
-
-/* 휴대폰 화면에서 여백과 제목 크기를 줄입니다. */
-@media (max-width: 600px) {
-  .app {
-    width: min(100% - 24px, 1000px);
-    padding: 40px 0;
-  }
-
-  .page-header h1 {
-    font-size: 32px;
-  }
-
-  .board-heading {
-    padding: 20px;
-  }
-}
-
-/* 제목 링크의 기본 밑줄을 제거하고 제목처럼 보이게 합니다. */
 .post-title-link {
-  color: #1f2937;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-/* 제목에 마우스를 올리면 클릭할 수 있다는 표시를 합니다. */
-.post-title-link:hover {
-  color: #5269ff;
+  color: #304fe8;
   text-decoration: underline;
 }
 
-/* 상세 화면에서 목록으로 돌아가는 링크입니다. */
-.back-link {
-  display: inline-block;
-  margin-bottom: 20px;
-  color: #5269ff;
-  font-weight: 700;
-  text-decoration: none;
+.empty-cell {
+  color: #6b7890;
 }
 
-/* 상세 화면의 내용을 담는 카드입니다. */
-.detail-card {
-  padding: 32px;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(31, 41, 55, 0.06);
+.auth-page,
+.write-page,
+.detail-page {
+  display: flex;
+  justify-content: center;
+  padding: 46px 0;
 }
+
+.auth-card,
+.write-card,
+.detail-card {
+  width: min(100%, 700px);
+  padding: 36px;
+}
+
+.auth-card {
+  width: min(100%, 440px);
+}
+
+.auth-form,
+.write-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.auth-form label,
+.write-form label {
+  margin-top: 8px;
+  font-weight: 700;
+}
+
+.auth-form input,
+.write-form input,
+.write-form textarea {
+  width: 100%;
+  border: 1px solid #cfd7e6;
+  border-radius: 8px;
+  padding: 13px;
+  outline: none;
+}
+
+.auth-form input:focus,
+.write-form input:focus,
+.write-form textarea:focus {
+  border-color: #4d65ff;
+}
+
+.write-form textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.submit-button {
+  margin-top: 14px;
+}
+
+.submit-button:disabled,
+.danger-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.text-link {
+  display: inline-block;
+  margin-top: 22px;
+  color: #5b6b86;
+  text-decoration: underline;
+}
+
+.form-error,
+.error-message {
+  color: #d94040;
+}
+
+.page-message {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: #68758b;
+  font-size: 14px;
+}
+
+.post-content {
+  min-height: 180px;
+  margin: 30px 0;
+  padding: 26px 0;
+  border-top: 1px solid #e7ebf2;
+  border-bottom: 1px solid #e7ebf2;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.detail-actions,
+.write-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.secondary-link-button {
+  border: 1px solid #cfd7e6;
+  border-radius: 8px;
+  color: #40516b;
+  padding: 10px 15px;
+}
+
+.danger-button {
+  border: 0;
+  border-radius: 8px;
+  background: #dc4545;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 11px 16px;
+}
+
+@media (max-width: 600px) {
+  .site-header {
+    align-items: flex-start;
+    gap: 16px;
+    flex-direction: column;
+  }
+
+  .board-intro h1,
+  .auth-card h1,
+  .write-card h1,
+  .detail-card h1 {
+    font-size: 30px;
+  }
+
+  .auth-card,
+  .write-card,
+  .detail-card {
+    padding: 24px;
+  }
+}
+
+.owner-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-button,
+.table-edit-link {
+  border-radius: 8px;
+  background: #edf0ff;
+  color: #4058e8;
+  font-weight: 700;
+}
+
+.edit-button {
+  padding: 11px 16px;
+}
+
+.table-edit-link {
+  display: inline-block;
+  padding: 7px 11px;
+  font-size: 13px;
+}
+
+.auth-footer {
+  margin: 24px 0 0;
+  color: #65728a;
+  text-align: center;
+}
+
+.auth-footer a {
+  color: #4058e8;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.form-success {
+  margin: 20px 0 0;
+  color: #208653;
+  text-align: center;
+}
+

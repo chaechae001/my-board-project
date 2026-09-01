@@ -37,7 +37,7 @@ app.get("/api/health", (req, res)=> {
 
 
 // 게시글 목록을 MongoDB에서 조회하는 API
-app.get('/api/posts', async(req, res)=>{
+app.get('/api/posts', requireAuth, async(req, res)=>{
     try{
         const posts = await Post.find().sort({createdAt: -1});
         return res.status(200).json(posts);
@@ -78,20 +78,63 @@ app.post("/api/posts", requireAuth, async (req, res)=>{
 });
 
 // MongoDB에서 게시글 상세 조회 및 조회수 증가
-// 본인이 작성한 게시글만 수정, 삭제할 수 있게 만들기
-app.get("/api/posts/:id", requireAuth, async (req, res)=>{
+app.get("/api/posts/:id", requireAuth, async (req, res) => {
     try {
-        const {id} = req.params;
-        const {title, content} = req.body;
+        // URL의 /api/posts/:id에서 게시글 ID를 가져옵니다.
+        const { id } = req.params;
 
-        // URL의 게시글 id가 MongoDB ObjectId 형식이 아닌 경우
-        if(!mongoose.Types.ObjectId.isValid(id)){
+        // MongoDB ObjectId 형식인지 확인합니다.
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                msg: "올바르지 않은 게시글 ID입니다."
+                msg: "올바르지 않은 게시글 ID입니다.",
             });
         }
 
-        // 수정하려는 게시글을 MongoDB에서 찾음
+        // 게시글을 찾고 조회수를 1 증가시킵니다.
+        const post = await Post.findByIdAndUpdate(
+            id,
+            { $inc: { views: 1 } },
+            { new: true },
+        );
+
+        // 해당 ID의 게시글이 없을 때입니다.
+        if (!post) {
+            return res.status(404).json({
+                msg: "게시글을 찾을 수 없습니다.",
+            });
+        }
+
+        // 증가한 조회수를 포함한 게시글 데이터를 반환합니다.
+        return res.status(200).json(post);
+    } catch (error) {
+        return res.status(500).json({
+            msg: "게시글을 불러오지 못했습니다.",
+        });
+    }
+});
+
+// MongoDB에서 게시글 제목과 내용을 수정하는 API
+app.patch("/api/posts/:id", requireAuth, async (req, res) => {
+    try {
+        // URL의 /api/posts/:id에서 게시글 ID를 가져옵니다.
+        const { id } = req.params;
+
+        // 수정할 제목과 내용을 Body에서 가져옵니다.
+        const { title, content } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                msg: "올바르지 않은 게시글 ID입니다.",
+            });
+        }
+
+        if (!title?.trim() || !content?.trim()) {
+            return res.status(400).json({
+                msg: "제목과 내용을 모두 입력해주세요.",
+            });
+        }
+
+        // 수정할 게시글을 찾습니다.
         const post = await Post.findById(id);
 
         if (!post) {
@@ -100,21 +143,20 @@ app.get("/api/posts/:id", requireAuth, async (req, res)=>{
             });
         }
 
-        // 게시글 작성자와 현재 로그인 사용자가 같은 사람인지 확인
+        // 로그인한 사용자가 작성자인지 확인합니다.
         if (
             !post.authorId ||
             post.authorId.toString() !== String(req.user.userId)
         ) {
             return res.status(403).json({
                 msg: "작성자만 게시글을 수정할 수 있습니다.",
-            })
+            });
         }
 
-        // 작성자 확인을 통과한 경우에만 내용을 수정
+        // 작성자일 때만 제목과 내용을 수정합니다.
         post.title = title;
         post.content = content;
 
-        // 수정된 내용을 MongoDB에 저장
         await post.save();
 
         return res.status(200).json(post);
@@ -170,55 +212,13 @@ app.delete("/api/posts/:id", requireAuth, async (req, res)=>{
     }
 });
 
-// MongoDB에서 게시글 제목과 내용을 수정하는 API
-app.patch("/api/posts/:id", async (req, res) =>{
-    try {
-        const { id } = req.params;  // URL의 :id로 "어떤 게시글을 수정할 지" 찾음
-        const {title, content} = req.body;  // Body의 title.content를 "무엇으로 수정할 지" 받음
-
-        if (!mongoose.Types.ObjectId.isValid(id)){
-            return res.status(400).json({
-                msg: "올바르지 않은 게시글 ID입니다.",
-            });
-        }
-        if (!title?.trim() || !content?.trim()) {
-            return res.status(400).json({
-                msg: "제목과 내용을 모두 입력해주세요.",
-            });
-        }
-
-        const updatedPost = await Post.findByIdAndUpdate(
-            id,
-            {
-                title,
-                content,
-            },
-            {
-                new: true, // 수정 전이 아닌 수정 후 데이터를 응답
-                runValidators: true,
-            },
-        );
-
-        if (!updatedPost){
-            return res.status(404).json({
-                msg: "게시글을 찾을 수 없습니다.",
-            });
-        }
-        return res.status(200).json(updatedPost);
-    } catch (error) {
-        return res.status(500).json({
-            msg: "게시글을 수정하지 못했습니다.",
-        });
-    }
-});
-
 async function startServer(){
     try{
         await mongoose.connect("mongodb://127.0.0.1:27017/my_board_db");
 
         console.log("MongoDB 연결 성공");
 
-        app.listen(4000, ()=>{
+        app.listen(PORT, ()=>{
             console.log("Server is running on port 4000");
         });
     } catch (error) {
@@ -269,7 +269,7 @@ app.post("/api/auth/register", async (req, res)=>{
             user: {
                 id: newUser._id,
                 userId: newUser.userId,
-                createdAg: newUser.createdAt,
+                createdAt: newUser.createdAt,
             },
         });
     } catch (error) {
