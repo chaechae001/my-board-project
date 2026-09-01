@@ -11,7 +11,7 @@ React, Express, MongoDB를 연결해 회원가입·로그인부터
   <img
     src="./docs/screenshots/post-list.png"
     alt="My Board 게시글 목록"
-    width="60%"
+    width="70%"
   />
 </p>
 
@@ -78,7 +78,7 @@ flowchart LR
   <img
     src="./docs/screenshots/login.png"
     alt="My Board 로그인 화면"
-    width="60%"
+    width="70%"
   />
 </p>
 
@@ -92,7 +92,7 @@ flowchart LR
   <img
     src="./docs/screenshots/post-list.png"
     alt="My Board 게시글 목록"
-    width="60%"
+    width="70%"
   />
 </p>
 
@@ -106,7 +106,7 @@ flowchart LR
   <img
     src="./docs/screenshots/post-detail-permission.png"
     alt="My Board 게시글 상세 및 작성자 권한 제어"
-    width="60%"
+    width="70%"
   />
 </p>
 
