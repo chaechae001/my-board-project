@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
-const {JWT_SECRET} = require("../config/auth");
-const {decode} = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // 로그인 토큰을 검사하느 미들웨어
 function requireAuth(req, res, next) {
@@ -20,9 +19,6 @@ function requireAuth(req, res, next) {
     try {
         // 토큰이 서버가 만든 토큰인지, 유효 시간이 지나지 않았는 지 확인
         const decodedToken = jwt.verify(token, JWT_SECRET);
-
-        // 이후 API에서 로그인 사용자 정보를 사용할 수 있도록 req.user에 저장
-        req.user = decodedToken;
 
         // 토큰 검사를 통과했으므로 다음 API 코드로 이동
         next();
