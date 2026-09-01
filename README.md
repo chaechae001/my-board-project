@@ -30,6 +30,7 @@ React, Express, MongoDB 기반의 JWT 인증 커뮤니티 게시판입니다.
 
 <img src="./docs/screenshots/post-list.png" alt="게시글 목록" width="540" />
 
+
 ### 3. 게시글 상세 및 작성자 권한 제어
 
 `user01`이 다른 사용자(`user02`)의 게시글을 조회한 화면입니다.  
